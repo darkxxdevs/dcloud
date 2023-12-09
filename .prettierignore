@@ -1,0 +1,21 @@
+# Ignore build and output directories
+node_modules
+/.next
+/out
+
+# Ignore coverage reports
+coverage
+
+# Ignore public folder contents (if you want to ignore specific files, adjust accordingly)
+/public/*
+
+# Ignore cache and temporary files
+.cache
+.next
+.vscode
+.DS_Store
+
+# Ignore environment files (if you have environment-specific configurations)
+.env*
+.gitignore
+bun.lockb
