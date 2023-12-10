@@ -1,9 +1,11 @@
 "use client"
-import React, { ChangeEvent, useState } from "react"
+import React, { ChangeEvent, useState, useEffect } from "react"
 import { Eye, EyeOff } from "lucide-react"
-import { account, ID } from "../../appwrite/appwrite"
+import appwriteService from "@/appwrite/appwrite"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { MutatingDots } from "react-loader-spinner"
+import useAuth from "@/hooks/useAuth"
 
 interface User {
   name: string
@@ -13,6 +15,8 @@ interface User {
 
 export default function SignUp() {
   const router = useRouter()
+  const { authStatus } = useAuth()
+
   const [user, setUser] = useState<User>({
     name: "",
     email: "",
@@ -20,6 +24,8 @@ export default function SignUp() {
   })
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isVisible, setIsVisible] = useState<boolean>(false)
+
+  useEffect(() => {})
 
   const togglePasswordVisibility = () => {
     setIsVisible(!isVisible)
@@ -38,19 +44,36 @@ export default function SignUp() {
   const register = async () => {
     try {
       setIsLoading(true)
-      await account.create(ID.unique(), user.email, user.password, user.name)
+      await appwriteService.createUserAccount({
+        username: user.name,
+        email: user.email,
+        password: user.password,
+      })
       router.push("/auth/login")
-    } catch (error) {
-      console.log("Error registering user !", error)
-    } finally {
-      setIsLoading(false)
+    } catch (error: any) {
+      console.log("Error registering user:", error)
     }
+  }
+
+  if (authStatus) {
+    router.replace("/home")
+    return <></>
   }
 
   return (
     <div className="container max-w-[1920px] w-[100vw] h-[100vh] flex items-center bg-[#DBD3D8] justify-center">
       {isLoading ? (
-        <h1 className="text-3xl uppercase font-bold">Loading...</h1>
+        <MutatingDots
+          height="100"
+          width="100"
+          color="#ffffff"
+          secondaryColor="#ffffff"
+          radius="12.5"
+          ariaLabel="mutating-dots-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+        />
       ) : (
         <div className="card border-2 border-black bg-white w-1/3 p-3 h-2/3 min-w-[350px] md:min-w-fit max-h-[600px] min-h-[600px] md:min-h-[480px]  md:max-w-[400px]  rounded-2xl">
           <div className="title w-full text-center">
