@@ -1,7 +1,7 @@
 "use client"
 import appwriteService from "@/appwrite/appwrite"
 import { useRouter } from "next/navigation"
-import React, { useContext, useEffect } from "react"
+import React, { useEffect } from "react"
 import useAuth from "@/hooks/useAuth"
 
 export default function Logout() {
