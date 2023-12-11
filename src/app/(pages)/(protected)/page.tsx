@@ -1,5 +1,5 @@
 "use client"
-import React, { useContext } from "react"
+import React, { useContext, useEffect } from "react"
 import AuthContext from "@/context/authContext"
 import { useRouter } from "next/navigation"
 
@@ -8,7 +8,6 @@ export default function Home() {
   const router = useRouter()
 
   if (!authStatus) {
-    router.replace("/auth/login")
     return <></>
   }
 

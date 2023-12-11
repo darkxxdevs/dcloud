@@ -1,5 +1,5 @@
 "use client"
-import React, { ChangeEvent, useState } from "react"
+import React, { ChangeEvent, useState, useEffect } from "react"
 import appwriteService from "@/appwrite/appwrite"
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
@@ -14,7 +14,7 @@ interface User {
 
 export default function Login() {
   const router = useRouter()
-  const { authStatus } = useAuth()
+  const { authStatus, setAuthStatus } = useAuth()
 
   const [user, setUser] = useState<User>({
     email: "",
@@ -40,14 +40,11 @@ export default function Login() {
   const login = async () => {
     try {
       setIsLoading(true)
-      const response = await appwriteService.loginUserAccount({
+      await appwriteService.loginUserAccount({
         email: user.email,
         password: user.password,
       })
-      console.log("userResponse", response)
-
-      console.log("authStatus", authStatus)
-      router.push("/")
+      setAuthStatus(true)
     } catch (error: any) {
       console.error("Error logging in :", error)
     } finally {
@@ -55,10 +52,12 @@ export default function Login() {
     }
   }
 
-  if (authStatus) {
-    router.replace("/")
-    return <></>
-  }
+  useEffect(() => {
+    if (authStatus) {
+      console.log("Auth status:", authStatus)
+      router.replace("/")
+    }
+  }, [authStatus])
 
   return (
     <div className="container max-w-[1920px] w-[100vw] h-[100vh] flex items-center bg-[#DBD3D8] justify-center">

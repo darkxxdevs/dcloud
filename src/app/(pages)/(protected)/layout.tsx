@@ -1,17 +1,19 @@
 "use client"
-
-import React from "react"
+import { useEffect } from "react"
 import useAuth from "@/hooks/useAuth"
 import { useRouter } from "next/navigation"
 
+import React from "react"
+
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
-  const authStatus = useAuth()
+  const { authStatus } = useAuth()
 
-  if (!authStatus) {
-    router.push("/auth/login")
-    return <></>
-  }
+  useEffect(() => {
+    if (!authStatus) {
+      router.replace("/auth/login")
+    }
+  }, [authStatus, router])
 
   return children
 }

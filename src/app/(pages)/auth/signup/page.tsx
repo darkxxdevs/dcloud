@@ -142,7 +142,7 @@ export default function SignUp() {
               or
             </div>
           </div>
-          <div className="link w-full text-center">
+          <div className="link w-full font-bold text-center">
             <Link href="/auth/login">Login instead!</Link>
           </div>
         </div>

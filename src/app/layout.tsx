@@ -1,12 +1,7 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { cn } from "@/lib/utils"
+import { AuthContextProvider } from "@/context/authContext"
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-})
+import "./globals.css"
 
 export const metadata: Metadata = {
   title: "dcloud",
@@ -19,15 +14,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          inter.variable
-        )}
-      >
-        {children}
-      </body>
-    </html>
+    <AuthContextProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`font-sans min-h-screen bg-background antialiased`}>
+          {children}
+        </body>
+      </html>
+    </AuthContextProvider>
   )
 }
