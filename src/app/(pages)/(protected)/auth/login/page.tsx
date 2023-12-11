@@ -1,31 +1,27 @@
 "use client"
-import React, { ChangeEvent, useState, useEffect } from "react"
-import { Eye, EyeOff } from "lucide-react"
+import React, { ChangeEvent, useState } from "react"
 import appwriteService from "@/appwrite/appwrite"
-import { useRouter } from "next/navigation"
+import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { MutatingDots } from "react-loader-spinner"
 import useAuth from "@/hooks/useAuth"
 
 interface User {
-  name: string
   email: string
   password: string
 }
 
-export default function SignUp() {
+export default function Login() {
   const router = useRouter()
   const { authStatus } = useAuth()
 
   const [user, setUser] = useState<User>({
-    name: "",
     email: "",
     password: "",
   })
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isVisible, setIsVisible] = useState<boolean>(false)
-
-  useEffect(() => {})
 
   const togglePasswordVisibility = () => {
     setIsVisible(!isVisible)
@@ -41,22 +37,26 @@ export default function SignUp() {
     }))
   }
 
-  const register = async () => {
+  const login = async () => {
     try {
       setIsLoading(true)
-      await appwriteService.createUserAccount({
-        username: user.name,
+      const response = await appwriteService.loginUserAccount({
         email: user.email,
         password: user.password,
       })
-      router.push("/auth/login")
+      console.log("userResponse", response)
+
+      console.log("authStatus", authStatus)
+      router.push("/")
     } catch (error: any) {
-      console.log("Error registering user:", error)
+      console.error("Error logging in :", error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   if (authStatus) {
-    router.replace("/home")
+    router.replace("/")
     return <></>
   }
 
@@ -75,22 +75,11 @@ export default function SignUp() {
           visible={true}
         />
       ) : (
-        <div className="card border-2 border-black bg-white w-1/3 p-3 h-2/3 min-w-[350px] md:min-w-fit max-h-[600px] min-h-[600px] md:min-h-[480px]  md:max-w-[400px]  rounded-2xl">
+        <div className="card border-2 border-black bg-white w-1/3 p-3 h-1/3 min-w-[350px] md:min-w-fit max-h-[600px] min-h-[600px] md:min-h-[480px]  md:max-w-[400px]  rounded-2xl">
           <div className="title w-full text-center">
-            <h1 className="text-3xl uppercase font-bold">Sign Up</h1>
+            <h1 className="text-3xl uppercase font-bold">LogIn</h1>
           </div>
           <div className="card-body h-[55%] mt-5 min-h-[65%]">
-            <div className="form-control mb-4 w-full">
-              <label className="label">
-                <span className="label-text text-black font-bold">Name</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Name"
-                className="input input-bordered  border-black border-2 p-3 rounded-xl w-full"
-                onChange={(e) => setUser({ ...user, name: e.target.value })}
-              />
-            </div>
             <div className="form-control mb-4 w-full">
               <label className="label">
                 <span className="label-text font-bold">Email</span>
@@ -99,7 +88,7 @@ export default function SignUp() {
                 type="text"
                 placeholder="Email"
                 className="input input-bordered border-2 border-black p-3 rounded-xl w-full"
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                onChange={(e) => handleInputChange(e, "email")}
               />
             </div>
             <div className="form-control w-full">
@@ -111,12 +100,7 @@ export default function SignUp() {
                   type={isVisible ? "text" : "password"}
                   placeholder="Password"
                   className="input  border-black  outline-0 p-3 w-11/12 rounded-xl "
-                  onChange={(e) =>
-                    setUser({
-                      ...user,
-                      password: e.target.value,
-                    })
-                  }
+                  onChange={(e) => handleInputChange(e, "password")}
                 />
                 <div className="pass-icon flex items-center outline-0 justify-center w-1/12 ">
                   <button
@@ -129,20 +113,21 @@ export default function SignUp() {
               </div>
             </div>
 
-            <div className="submit-btn w-full flex items-center justify-center pl-3 md:pl-2">
+            <div className="submit-btn w-full ">
               <button
-                onClick={register}
-                className="btn btn-primary mt-5  bg-black text-white p-3 rounded-2xl w-full  font-bold"
+                onClick={login}
+                className="btn btn-primary mt-5  bg-black text-white p-3 rounded-2xl w-full font-bold"
               >
-                Sign Up
+                login
               </button>
-            </div>
-            <div className="option-mark w-full font-bold text-grey text-center">
-              or
+
+              <div className="option-mark w-full mt-1 font-bold text-grey text-center">
+                or
+              </div>
             </div>
           </div>
-          <div className="link w-full text-center">
-            <Link href="/auth/login">Login instead!</Link>
+          <div className="link flex items-center justify-center font-bold">
+            <Link href={"/auth/signup"}>Signup instead!</Link>
           </div>
         </div>
       )}

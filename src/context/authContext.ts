@@ -1,4 +1,4 @@
-import { createContext } from "react"
+import { createContext, useState } from "react"
 
 export const AuthContext = createContext<{
   authStatus: boolean
@@ -8,6 +8,6 @@ export const AuthContext = createContext<{
   setAuthStatus: () => {},
 })
 
-export const AuthProvider = AuthContext.Provider
+const AuthProvider = AuthContext.Provider
 
 export default AuthContext

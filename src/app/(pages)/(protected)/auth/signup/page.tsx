@@ -1,22 +1,24 @@
 "use client"
 import React, { ChangeEvent, useState } from "react"
-import appwriteService from "@/appwrite/appwrite"
 import { Eye, EyeOff } from "lucide-react"
-import Link from "next/link"
+import appwriteService from "@/appwrite/appwrite"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { MutatingDots } from "react-loader-spinner"
-import { useAuth } from "@/hooks/useAuth"
+import useAuth from "@/hooks/useAuth"
 
 interface User {
+  name: string
   email: string
   password: string
 }
 
-export default function Login() {
+export default function SignUp() {
   const router = useRouter()
   const { authStatus } = useAuth()
 
   const [user, setUser] = useState<User>({
+    name: "",
     email: "",
     password: "",
   })
@@ -37,15 +39,18 @@ export default function Login() {
     }))
   }
 
-  const login = async () => {
+  const register = async () => {
     try {
       setIsLoading(true)
-      await appwriteService.loginUserAccount({
+      await appwriteService.createUserAccount({
+        username: user.name,
         email: user.email,
         password: user.password,
       })
+
+      router.push("/auth/login")
     } catch (error: any) {
-      console.error("Error logging in :", error)
+      console.log("Error registering user:", error)
     } finally {
       setIsLoading(false)
     }
@@ -71,11 +76,22 @@ export default function Login() {
           visible={true}
         />
       ) : (
-        <div className="card border-2 border-black bg-white w-1/3 p-3 h-1/3 min-w-[350px] md:min-w-fit max-h-[600px] min-h-[600px] md:min-h-[480px]  md:max-w-[400px]  rounded-2xl">
+        <div className="card border-2 border-black bg-white w-1/3 p-3 h-2/3 min-w-[350px] md:min-w-fit max-h-[600px] min-h-[600px] md:min-h-[480px]  md:max-w-[400px]  rounded-2xl">
           <div className="title w-full text-center">
-            <h1 className="text-3xl uppercase font-bold">LogIn</h1>
+            <h1 className="text-3xl uppercase font-bold">Sign Up</h1>
           </div>
           <div className="card-body h-[55%] mt-5 min-h-[65%]">
+            <div className="form-control mb-4 w-full">
+              <label className="label">
+                <span className="label-text text-black font-bold">Name</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Name"
+                className="input input-bordered  border-black border-2 p-3 rounded-xl w-full"
+                onChange={(e) => setUser({ ...user, name: e.target.value })}
+              />
+            </div>
             <div className="form-control mb-4 w-full">
               <label className="label">
                 <span className="label-text font-bold">Email</span>
@@ -114,21 +130,20 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="submit-btn w-full ">
+            <div className="submit-btn w-full flex items-center justify-center pl-3 md:pl-2">
               <button
-                onClick={() => login}
-                className="btn btn-primary mt-5  bg-black text-white p-3 rounded-2xl w-full font-bold"
+                onClick={register}
+                className="btn btn-primary mt-5  bg-black text-white p-3 rounded-2xl w-full  font-bold"
               >
-                login
+                Sign Up
               </button>
-
-              <div className="option-mark w-full mt-1 font-bold text-grey text-center">
-                or
-              </div>
+            </div>
+            <div className="option-mark w-full font-bold text-grey text-center">
+              or
             </div>
           </div>
-          <div className="link flex items-center justify-center font-bold">
-            <Link href={"/auth/signup"}>Signup instead!</Link>
+          <div className="link w-full text-center">
+            <Link href="/auth/login">Login instead!</Link>
           </div>
         </div>
       )}
