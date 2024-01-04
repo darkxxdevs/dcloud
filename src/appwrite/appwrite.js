@@ -1,28 +1,28 @@
 import { Client, ID, Account } from "appwrite"
 import config from "@/config/appwriteConfig"
 
-const client = new Client()
-
-client.setEndpoint(config.endpoint).setProject(config.project)
-
-export const account = new Account(client)
-
 export class AppwriteService {
+  constructor() {
+    this.client = new Client()
+    this.client.setEndpoint(config.endpoint).setProject(config.project)
+    this.account = new Account(this.client)
+  }
+
   async createUserAccount({ username, email, password }) {
     try {
-      return await account.create(ID.unique(), email, password, username)
+      return await this.account.create(ID.unique(), email, password, username)
     } catch (error) {
       throw error
     }
   }
 
-  async loginUserAccount({ email, password }) {
-    return await account.createEmailSession(email, password)
+  async createEmailSession({ email, password }) {
+    return await this.account.createEmailSession(email, password)
   }
 
   async getCurrentUser() {
     try {
-      return await account.get()
+      return await this.account.get()
     } catch (error) {
       throw error
     }
@@ -39,7 +39,27 @@ export class AppwriteService {
 
   async logout() {
     try {
-      return await account.deleteSession("current")
+      return await this.account.deleteSession("current")
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async verifyUser(redirectionUrl) {
+    try {
+      const response = await this.account.createVerification(redirectionUrl)
+      return response
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async updateUserVerification() {
+    const urlParams = new URLSearchParams(window.location.search)
+    const secret = urlParams.get("secret")
+    const userid = urlParams.get("userId")
+    try {
+      return await this.account.updateVerification(userid, secret)
     } catch (error) {
       throw error
     }

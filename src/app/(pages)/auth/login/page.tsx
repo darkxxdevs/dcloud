@@ -1,11 +1,12 @@
 "use client"
-import React, { ChangeEvent, useState, useEffect } from "react"
+import React, { ChangeEvent, useState } from "react"
+import { useContext } from "react"
+import { AuthContext } from "@/context/authContext"
 import appwriteService from "@/appwrite/appwrite"
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { MutatingDots } from "react-loader-spinner"
-import useAuth from "@/hooks/useAuth"
 
 interface User {
   email: string
@@ -14,14 +15,14 @@ interface User {
 
 export default function Login() {
   const router = useRouter()
-  const { authStatus, setAuthStatus } = useAuth()
+  const { isLoggedIn, setLoggedIn } = useContext(AuthContext)
+  const [isVisible, setIsVisible] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [user, setUser] = useState<User>({
     email: "",
     password: "",
   })
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [isVisible, setIsVisible] = useState<boolean>(false)
 
   const togglePasswordVisibility = () => {
     setIsVisible(!isVisible)
@@ -40,11 +41,11 @@ export default function Login() {
   const login = async () => {
     try {
       setIsLoading(true)
-      await appwriteService.loginUserAccount({
+      await appwriteService.createEmailSession({
         email: user.email,
         password: user.password,
       })
-      setAuthStatus(true)
+      setLoggedIn(true)
     } catch (error: any) {
       console.error("Error logging in :", error)
     } finally {
@@ -52,13 +53,10 @@ export default function Login() {
     }
   }
 
-  useEffect(() => {
-    if (authStatus) {
-      console.log("Auth status:", authStatus)
-      router.replace("/")
-    }
-  }, [authStatus])
-
+  if (isLoggedIn) {
+    router.replace("/")
+    return <></>
+  }
   return (
     <div className="container max-w-[1920px] w-[100vw] h-[100vh] flex items-center bg-[#DBD3D8] justify-center">
       {isLoading ? (

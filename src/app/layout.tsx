@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { AuthContextProvider } from "@/context/authContext"
-
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -14,12 +13,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <AuthContextProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={`font-sans min-h-screen bg-background antialiased`}>
-          {children}
-        </body>
-      </html>
-    </AuthContextProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`font-sans min-h-screen bg-background antialiased`}>
+        <AuthContextProvider>{children}</AuthContextProvider>
+      </body>
+    </html>
   )
 }

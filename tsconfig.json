@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/appwrite/appwrite.js"
+    "src/appwrite/appwrite.js",
+    "src/context/authContext.jsx"
   ],
   "exclude": ["node_modules"]
 }

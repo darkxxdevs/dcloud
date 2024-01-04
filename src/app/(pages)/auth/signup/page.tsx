@@ -5,7 +5,8 @@ import appwriteService from "@/appwrite/appwrite"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { MutatingDots } from "react-loader-spinner"
-import useAuth from "@/hooks/useAuth"
+import { useContext } from "react"
+import { AuthContext } from "@/context/authContext"
 
 interface User {
   name: string
@@ -15,7 +16,8 @@ interface User {
 
 export default function SignUp() {
   const router = useRouter()
-  const { authStatus } = useAuth()
+  const [emailSent, setEmailSent] = useState<boolean>(false)
+  const { isLoggedIn, setLoggedIn } = useContext(AuthContext)
 
   const [user, setUser] = useState<User>({
     name: "",
@@ -39,6 +41,19 @@ export default function SignUp() {
     }))
   }
 
+  const sendVerificationEmail = async (url: string) => {
+    try {
+      await appwriteService.createEmailSession({
+        email: user.email,
+        password: user.password,
+      })
+      await appwriteService.verifyUser(url)
+      setEmailSent(true)
+    } catch (error: any) {
+      console.log(`Error sending email ${error}`)
+    }
+  }
+
   const register = async () => {
     try {
       setIsLoading(true)
@@ -47,16 +62,29 @@ export default function SignUp() {
         email: user.email,
         password: user.password,
       })
-
-      router.push("/auth/login")
+      const response = await sendVerificationEmail(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/verify`
+      )
+      console.log(process.env.NEXT_PUBLIC_SERVER_URL)
+      console.log("email line output", response)
     } catch (error: any) {
-      console.log("Error registering user:", error)
+      console.log("Error registering user:", error.message)
     } finally {
       setIsLoading(false)
     }
   }
 
-  if (authStatus) {
+  if (emailSent) {
+    return (
+      <div className="container max-w-[1920px] w-[100vw] h-[100vh] flex items-center bg-[#DBD3D8] justify-center">
+        <h2>
+          Verification email has been sent check your inbox for verification
+        </h2>
+      </div>
+    )
+  }
+
+  if (isLoggedIn) {
     router.replace("/")
     return <></>
   }
@@ -89,7 +117,7 @@ export default function SignUp() {
                 type="text"
                 placeholder="Name"
                 className="input input-bordered  border-black border-2 p-3 rounded-xl w-full"
-                onChange={(e) => setUser({ ...user, name: e.target.value })}
+                onChange={(e) => handleInputChange(e, "name")}
               />
             </div>
             <div className="form-control mb-4 w-full">
@@ -100,7 +128,7 @@ export default function SignUp() {
                 type="text"
                 placeholder="Email"
                 className="input input-bordered border-2 border-black p-3 rounded-xl w-full"
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                onChange={(e) => handleInputChange(e, "email")}
               />
             </div>
             <div className="form-control w-full">
@@ -112,12 +140,7 @@ export default function SignUp() {
                   type={isVisible ? "text" : "password"}
                   placeholder="Password"
                   className="input  border-black  outline-0 p-3 w-11/12 rounded-xl "
-                  onChange={(e) =>
-                    setUser({
-                      ...user,
-                      password: e.target.value,
-                    })
-                  }
+                  onChange={(e) => handleInputChange(e, "password")}
                 />
                 <div className="pass-icon flex items-center outline-0 justify-center w-1/12 ">
                   <button
