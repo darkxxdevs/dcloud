@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import { AuthContextProvider } from "@/context/authContext"
 import "./globals.css"
+import { AuthProvider } from "@/context/authContext"
 
 export const metadata: Metadata = {
   title: "dcloud",
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans min-h-screen bg-background antialiased`}>
-        <AuthContextProvider>{children}</AuthContextProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   )

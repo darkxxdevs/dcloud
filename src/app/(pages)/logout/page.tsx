@@ -2,18 +2,17 @@
 import appwriteService from "@/appwrite/appwrite"
 import { useRouter } from "next/navigation"
 import React, { useEffect } from "react"
-import { useContext } from "react"
-import { AuthContext } from "@/context/authContext"
+import useAuth from "@/context/useAuth"
 
 export default function Logout() {
   const router = useRouter()
-  const { setLoggedIn } = useContext(AuthContext)
+  const { authStatus, setAuthStatus } = useAuth()
 
   useEffect(() => {
     appwriteService
       .logout()
       .then(() => {
-        setLoggedIn(false)
+        setAuthStatus(false)
         router.replace("/auth/login")
       })
       .catch((error) => {

@@ -1,12 +1,11 @@
 "use client"
-import React, { ChangeEvent, useState } from "react"
-import { useContext } from "react"
-import { AuthContext } from "@/context/authContext"
+import React, { ChangeEvent, useEffect, useState } from "react"
 import appwriteService from "@/appwrite/appwrite"
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { MutatingDots } from "react-loader-spinner"
+import useAuth from "@/context/useAuth"
 
 interface User {
   email: string
@@ -15,7 +14,7 @@ interface User {
 
 export default function Login() {
   const router = useRouter()
-  const { isLoggedIn, setLoggedIn } = useContext(AuthContext)
+  const { authStatus, setAuthStatus } = useAuth()
   const [isVisible, setIsVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -45,7 +44,7 @@ export default function Login() {
         email: user.email,
         password: user.password,
       })
-      setLoggedIn(true)
+      setAuthStatus(true)
     } catch (error: any) {
       console.error("Error logging in :", error)
     } finally {
@@ -53,10 +52,12 @@ export default function Login() {
     }
   }
 
-  if (isLoggedIn) {
-    router.replace("/")
-    return <></>
-  }
+  // useEffect(() => {
+  //   console.log("authStatus", authStatus)
+  //   if (authStatus === true) {
+  //     router.replace("/")
+  //   }
+  // })
   return (
     <div className="container max-w-[1920px] w-[100vw] h-[100vh] flex items-center bg-[#DBD3D8] justify-center">
       {isLoading ? (

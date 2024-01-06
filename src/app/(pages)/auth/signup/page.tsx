@@ -1,12 +1,11 @@
 "use client"
-import React, { ChangeEvent, useState } from "react"
+import React, { ChangeEvent, useEffect, useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
 import appwriteService from "@/appwrite/appwrite"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { MutatingDots } from "react-loader-spinner"
-import { useContext } from "react"
-import { AuthContext } from "@/context/authContext"
+import useAuth from "@/context/useAuth"
 
 interface User {
   name: string
@@ -17,7 +16,7 @@ interface User {
 export default function SignUp() {
   const router = useRouter()
   const [emailSent, setEmailSent] = useState<boolean>(false)
-  const { isLoggedIn, setLoggedIn } = useContext(AuthContext)
+  const { authStatus } = useAuth()
 
   const [user, setUser] = useState<User>({
     name: "",
@@ -74,6 +73,12 @@ export default function SignUp() {
     }
   }
 
+  // useEffect(() => {
+  //   if (authStatus === true) {
+  //     router.replace("/")
+  //   }
+  // })
+
   if (emailSent) {
     return (
       <div className="container max-w-[1920px] w-[100vw] h-[100vh] flex items-center bg-[#DBD3D8] justify-center">
@@ -82,11 +87,6 @@ export default function SignUp() {
         </h2>
       </div>
     )
-  }
-
-  if (isLoggedIn) {
-    router.replace("/")
-    return <></>
   }
 
   return (

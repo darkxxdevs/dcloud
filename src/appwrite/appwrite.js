@@ -28,15 +28,6 @@ export class AppwriteService {
     }
   }
 
-  async isUserLoggedIn() {
-    try {
-      const data = await this.getCurrentUser()
-      return !!data
-    } catch (error) {
-      return false
-    }
-  }
-
   async logout() {
     try {
       return await this.account.deleteSession("current")
